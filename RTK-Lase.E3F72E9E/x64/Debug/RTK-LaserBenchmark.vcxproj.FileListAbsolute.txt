@@ -1,4 +1,0 @@
-D:\Code\RTK-LaserBenchmark\GeoAncher\x64\Debug\LMF.Tracker.Connection.dll
-D:\Code\RTK-LaserBenchmark\GeoAncher\x64\Debug\LMF.Tracker.Connection.xml
-D:\Code\RTK-LaserBenchmark\GeoAncher\RTK-Lase.E3F72E9E\x64\Debug\RTK-LaserBenchmark.vcxproj.AssemblyReference.cache
-D:\Code\RTK-LaserBenchmark\GeoAncher\RTK-Lase.E3F72E9E\x64\Debug\RTK-Lase.875F4F5A.Up2Date

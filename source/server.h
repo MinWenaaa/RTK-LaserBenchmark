@@ -14,8 +14,10 @@ public:
 
 signals:
 	void messageReceived(const QString& message);
+	void connected(const QString& s);
 
 public slots:
+
 	void handleClientConnection();
 	void readClientData();
 	void sendResponse(const QString& response);

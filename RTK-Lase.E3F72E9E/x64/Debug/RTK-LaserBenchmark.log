@@ -1,7 +1,0 @@
-﻿   Qt/MSBuild: 3.3.1.1
-   Qt: 6.8.2
-  server.cpp
-  server.obj : 遇到了 MSIL 模块；对 MSIL 禁用了增量链接；正在执行完全链接
-  RTK-LaserBenchmark.vcxproj -> D:\Code\RTK-LaserBenchmark\GeoAncher\x64\Debug\RTK-LaserBenchmark.exe
-  'pwsh.exe' 不是内部或外部命令，也不是可运行的程序
-  或批处理文件。

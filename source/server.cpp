@@ -24,6 +24,7 @@ void Server::startServer(int port) {
 
 void Server::handleClientConnection() {
 	currentSocket = tcpServer->nextPendingConnection();
+	emit connected("?");
 	connect(currentSocket, &QTcpSocket::readyRead, this, &Server::readClientData);
 	qDebug() << "Client connected!";
 }
