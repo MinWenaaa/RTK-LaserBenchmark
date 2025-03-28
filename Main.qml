@@ -7,28 +7,43 @@ Window {
     visible: true
     title: qsTr("Hello World")
 
-    Column {
-        width: 640
-        height: 540
-
-        TextInput{
-            width: 320; height: 60
-            id: ipAdressInput; text: "IP Adress"
+    Column{
+        TextField {
+            id: ipAddressInput
+            width: 540; height: 60
+            placeholderText: "ip address"
         }
-        TextInput{
-            width: 320; height: 60
-            id: portInput; text: "Port"}
-        Button{
-            property bool sucessed: false
-            width: 320; height: 60
+
+        TextField {
+            id: portInput
+            width: 540; height: 60
+            placeholderText: "port"
+        }
+
+        Button {
+            id: connectButton
+            text:  "connect"
             background: Rectangle {
-                   color: parent.sucessed ? "red" : "blue"
-               }
-            text: "Connect"
+                width: 540; height: 60
+                color: "gray"
+            }
             onClicked: {
-                var ipAddress = ipAdressInput.text.trim()
-                var port = parseInt(portInput.text.trim())
-                sucessed = client.connectToServer(ipAddress, port)
+                var ipAddress = ipAddressInput.text
+                var port = parseInt(portInput.text)
+                client.connectToServer(ipAddress, port)
+            }
+        }
+
+        Connections {
+            target: client
+            onConnectSucessed: {
+                connectButton.background.color = "green"
+            }
+            onConnectError: {
+                connectButton.background.color = "red"
+            }
+            onStartConnection: {
+                connectButton.background.color = "blue"
             }
         }
     }
