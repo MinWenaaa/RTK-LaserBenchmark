@@ -1,0 +1,5 @@
+﻿  main.cpp
+  server.obj : 遇到了 MSIL 模块；对 MSIL 禁用了增量链接；正在执行完全链接
+  Ancher_consol.vcxproj -> D:\Code\RTK-LaserBenchmark\Ancher_consol\x64\Debug\Ancher_consol.exe
+  'pwsh.exe' 不是内部或外部命令，也不是可运行的程序
+  或批处理文件。

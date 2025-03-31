@@ -1,10 +1,10 @@
-#include "GeoAncher.h"
-#include <QtWidgets/QApplication>
+#include <iostream>
 
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    GeoAncher w;
-    w.show();
-    return a.exec();
+#include "tracker_manager.h"
+
+int main() {
+	TrackerManager::getInstance->ConnectTo("ATS600Simulator");
+	int i;
+	std::cin >> i;
+	return 0;
 }
