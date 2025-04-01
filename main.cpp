@@ -6,7 +6,9 @@
 
 using namespace System;
 
+
 int main() {
+	solution::getInstance().initial();
 	ConnectTo("ATS600Simulator");
 	boost::asio::io_context io_context;
 	TcpServer server(io_context);

@@ -2,19 +2,21 @@
 #include <boost/bind/bind.hpp>
 
 #include "server.h"
+#include "tracker_manager.h"
 
 void TcpConnection::start() {
-	handleRead();
+	handleRead(measure);
 }
 
-void TcpConnection::handleRead() {
+void TcpConnection::handleRead(std::function<void(const std::string&)> callback) {
 	auto self(shared_from_this());
 	socket_.async_read_some(boost::asio::buffer(buffer_),
-		[this, self](boost::system::error_code ec, std::size_t length) {
+		[this, self, callback](boost::system::error_code ec, std::size_t length) {
 			if (!ec) {
 				std::string message(buffer_.data(), length);
 				std::cout << "Received: " << message << std::endl;
-				handleRead();
+				if (callback) callback(message);
+				handleRead(callback);
 			} else {
 				if (ec == boost::asio::error::eof) {
 					std::cout << "Connection closed by peer" << std::endl;

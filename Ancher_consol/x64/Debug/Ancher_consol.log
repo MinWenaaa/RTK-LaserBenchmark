@@ -3,7 +3,7 @@
   - add -D_WIN32_WINNT=0x0601 to the compiler command line; or
   - add _WIN32_WINNT=0x0601 to your project's Preprocessor Definitions.
   Assuming _WIN32_WINNT=0x0601 (i.e. Windows 7 target).
-D:\Code\RTK-LaserBenchmark\Ancher_consol\main.cpp(33,9): warning C4161: #pragma managed(pop...): 出栈的比入栈的多
+D:\Code\RTK-LaserBenchmark\Ancher_consol\main.cpp(35,9): warning C4161: #pragma managed(pop...): 出栈的比入栈的多
 D:\package\boost_1_87_0\include\boost-1_87\boost\asio\detail\impl\winsock_init.ipp(67,1): warning C4793: “boost::asio::detail::winsock_init_base::throw_on_error”: 编译为本机的函数:
 D:\package\boost_1_87_0\include\boost-1_87\boost\asio\detail\impl\winsock_init.ipp(67,1): warning C4793: 	托管代码中发现一个不受支持的内部函数
 D:\package\boost_1_87_0\include\boost-1_87\boost\asio\detail\win_thread.hpp(48,1): warning C4793: “boost::asio::detail::win_thread_base<boost::asio::detail::win_thread>::terminate_threads”: 编译为本机的函数:

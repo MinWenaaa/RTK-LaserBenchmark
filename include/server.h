@@ -21,7 +21,7 @@ private:
 	TcpConnection(boost::asio::io_context& io_context)
 		: socket_(io_context) {
 	}
-	void handleRead();
+	void handleRead(std::function<void(const std::string&)> callback);
 
 	boost::asio::ip::tcp::socket socket_;
 	std::array<char, 1024> buffer_;
