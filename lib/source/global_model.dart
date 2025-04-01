@@ -40,4 +40,21 @@ class ConnectionProvider with ChangeNotifier {
     _state = AncherConnectionState.connected;
     notifyListeners();
   }
+
+  Future<void> sendMessage(String message) async {
+    if (_socket == null || _state != AncherConnectionState.connected) {
+      throw Exception("Socket is not connected");
+    }
+
+    try {
+      _socket!.write(message);
+      print("Message sent: $message");
+    } catch (e) {
+      _state = AncherConnectionState.error;
+      _response = "Error sending message: $e";
+      notifyListeners();
+      print("Error sending message: $e");
+      rethrow;
+    }
+  }
 }

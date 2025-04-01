@@ -3,6 +3,8 @@ import 'package:geo_mobile/source/global_model.dart';
 import 'pages/home_page.dart';
 import 'package:provider/provider.dart';
 
+// flutter build apk --split-per-abi
+
 void main() {
   runApp(ChangeNotifierProvider(
       create: (_) => ConnectionProvider(),
