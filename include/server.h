@@ -12,15 +12,17 @@ public:
 		return socket_;
 	}
 
-    void start() {};
+    void start();
     void close() {};
+
+    void handleWrite(const std::string& message);
 
 private:
 	TcpConnection(boost::asio::io_context& io_context)
 		: socket_(io_context) {
 	}
 	void handleRead();
-	void handleWrite(const std::string& message);
+
 	boost::asio::ip::tcp::socket socket_;
 	std::array<char, 1024> buffer_;
 
@@ -28,27 +30,23 @@ private:
 
 class TcpServer {
 private:
-    TcpServer();
-    ~TcpServer() {}
-    TcpServer(const TcpServer&) = delete; 
-    TcpServer& operator=(const TcpServer&) = delete;
-
-    static TcpServer* instance;
-
     void start_accept();
+    void handle_accept(TcpConnection::pointer new_connection,
+        const boost::system::error_code& error);
 
     boost::asio::io_context& io_context_;
     boost::asio::ip::tcp::acceptor acceptor_;
     boost::shared_ptr<TcpConnection> current_connection_;
 
 public:
-    static TcpServer* getInstance() {
-        if (!instance) {
-            instance = new TcpServer();
-        }
-        return instance;
+    TcpServer(boost::asio::io_context& io_context)
+        : io_context_(io_context), acceptor_(io_context) {
     }
+    ~TcpServer() { stop(); }
 
-    void handle_accept(TcpConnection::pointer new_connection,
-        const boost::system::error_code& error);
+
+    void start(short port);
+    void stop();
+
+    void sendMessage(const std::string& message);
 };

@@ -3,11 +3,11 @@
 
 using namespace LMF::Tracker;
 
-void TrackerManager::ConnectTo(const char* ipAddress) {
-	if (this->LMFTracker) this->LMFTracker->Disconnect();
+void ConnectTo(const char* ipAddress) {
+	if (TrackerManager::LMFTracker) TrackerManager::LMFTracker->Disconnect();
 
 	Connection^ con = gcnew Connection();
 	if (strcmp(ipAddress, "0.0.0.0")) {
-		this->LMFTracker = con->Connect(gcnew System::String(ipAddress));
+		TrackerManager::LMFTracker = con->Connect(gcnew System::String(ipAddress));
 	}
 }
