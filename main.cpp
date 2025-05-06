@@ -3,6 +3,7 @@
 
 #include "tracker_manager.h"
 #include "server.h"
+#include "solution.h"
 
 using namespace System;
 
