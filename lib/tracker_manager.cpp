@@ -14,6 +14,7 @@ using namespace LMF::Tracker::Measurements;
 using namespace LMF::Tracker::MeasurementResults;
 
 std::string solution::measure_data_file_path;
+std::chrono::steady_clock::time_point solution::lastProcessedTime = std::chrono::steady_clock::now();
 
 void ConnectTo(const char* ipAddress) {
 	if (TrackerManager::LMFTracker) TrackerManager::LMFTracker->Disconnect();
@@ -21,6 +22,8 @@ void ConnectTo(const char* ipAddress) {
 	Connection^ con = gcnew Connection();
 	if (strcmp(ipAddress, "0.0.0.0")) {
 		TrackerManager::LMFTracker = con->Connect(gcnew System::String(ipAddress));
+		TrackerManager::LMFTracker->OverviewCamera->ImageArrived += gcnew LMF::Tracker::OVC::OverviewCamera::ImageArrivedHandler(&TrackerManager::OnImageArrived);
+		TrackerManager::LMFTracker->OverviewCamera->StartAsync();
 	}
 }
 
@@ -70,5 +73,26 @@ void solution::initial() {
 	}
 	else {
 		std::cerr << "Unable to open file for writing. " << this->measure_data_file_path  << std::endl;
+	}
+}
+
+void solution::poccessImg(array<System::Byte>^ image) {
+	auto now = std::chrono::steady_clock::now();
+
+	// 设定处理间隔（例如 1 秒）
+	std::chrono::seconds interval(1);
+
+	if (now - lastProcessedTime >= interval) {
+		lastProcessedTime = now;
+
+		std::cout << "Processing image data..." << std::endl;
+
+		std::cout << "Image size: " << image->Length << " bytes" << std::endl;
+
+		cli::pin_ptr<System::Byte> pinnedArray = &image[0];
+		unsigned char* nativeArray = pinnedArray;
+		std::vector<unsigned char> data(nativeArray, nativeArray + image->Length);
+
+		//TcpServer::getInstance()->sendMessage(data);
 	}
 }

@@ -2,3 +2,7 @@ D:\Code\RTK-LaserBenchmark\Ancher_consol\x64\Debug\LMF.Tracker.Connection.dll
 D:\Code\RTK-LaserBenchmark\Ancher_consol\x64\Debug\LMF.Tracker.Connection.xml
 D:\Code\RTK-LaserBenchmark\Ancher_consol\Ancher_consol\x64\Debug\Ancher_consol.vcxproj.AssemblyReference.cache
 D:\Code\RTK-LaserBenchmark\Ancher_consol\Ancher_consol\x64\Debug\Ancher_c.EAC20C8B.Up2Date
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark\x64\Debug\LMF.Tracker.Connection.dll
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark\x64\Debug\LMF.Tracker.Connection.xml
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark\Ancher_consol\x64\Debug\Ancher_consol.vcxproj.AssemblyReference.cache
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark\Ancher_consol\x64\Debug\Ancher_c.EAC20C8B.Up2Date
