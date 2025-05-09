@@ -37,7 +37,7 @@ class _MeasurementDialogState extends State<MeasurementDialog> {
                 Navigator.pop(context);
               },
               child: Text("确定", style: IndSoft.instance.standardText,),
-              style: IndSoft.instance.buttonStyle,
+              style: IndSoft.instance.primButton,
             )
           ]
         )

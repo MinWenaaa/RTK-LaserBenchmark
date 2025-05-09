@@ -1,12 +1,21 @@
-import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 
 enum AncherConnectionState {
   connecting, connected, error
 }
 
+class MeasurePoint {
+  String name;
+  num x, y, z;
+
+  MeasurePoint({required this.name, required this.x, required this.y, required this.z});
+}
+
 class ConnectionProvider with ChangeNotifier {
+  // 服务器状态
   AncherConnectionState _state = AncherConnectionState.error;
   String? _response;
   Socket? _socket;
@@ -15,19 +24,21 @@ class ConnectionProvider with ChangeNotifier {
   String? get response => _response;
 
   Future<void> connectToServer(String host, int port) async {
-    print("ConnectionProvider: start connection!");
+    log("ConnectionProvider: start connection!");
     try {
       _state = AncherConnectionState.connecting;
+      notifyListeners();
+
       _socket = await Socket.connect(host, port);
+      _state = AncherConnectionState.connected;
+      notifyListeners();
+
       _socket?.listen((List<int> data) {
-          _response = utf8.decode(data);
+          _handleIncomingData(data);
+        }, onError: (error) {
+          _response = 'Error';
           notifyListeners();
-        },
-        onError: (error) {
-          _response = 'Error: $error';
-          notifyListeners();
-        },
-        onDone: (){
+        }, onDone: (){
           _state = AncherConnectionState.error;
           notifyListeners();
         }
@@ -35,10 +46,9 @@ class ConnectionProvider with ChangeNotifier {
     } catch (e) {
       _state = AncherConnectionState.error;
       _response = "Error: $e";
-      print("ConnectionProvider: connection error: $e");
+      log("ConnectionProvider: connection error: $e");
+      notifyListeners();
     }
-    _state = AncherConnectionState.connected;
-    notifyListeners();
   }
 
   Future<void> sendMessage(String message) async {
@@ -48,13 +58,42 @@ class ConnectionProvider with ChangeNotifier {
 
     try {
       _socket!.write(message);
-      print("Message sent: $message");
+      log("Message sent: $message");
     } catch (e) {
       _state = AncherConnectionState.error;
       _response = "Error sending message: $e";
       notifyListeners();
-      print("Error sending message: $e");
+      log("Error sending message: $e");
       rethrow;
     }
   }
+
+
+
+  // 测量数据
+  List<MeasurePoint> _measurePoints = [];
+
+  late Uint8List _bitmapImage = Uint8List(0);
+  Uint8List get bitmapImage => _bitmapImage;
+
+  void _handleIncomingData(List<int> data) {
+    try {
+      final ByteData byteData = ByteData.sublistView(Uint8List.fromList(data));
+      final int type = byteData.getUint32(0, Endian.little);
+
+      if (type == 1) {
+        // 位图数据
+        final int bitmapDataSize = byteData.getUint32(4, Endian.little);
+        _bitmapImage = Uint8List.fromList(data.sublist(8, 8 + bitmapDataSize));
+        _response = "Bitmap data received";
+        notifyListeners();
+      } else {
+        _response = "${data.length} bytes received";
+        notifyListeners();
+      }
+    } catch (e) {
+      log("Error handling incoming data: $e");
+    }
+  }
+
 }
