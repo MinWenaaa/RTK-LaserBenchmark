@@ -15,7 +15,7 @@ public:
     void start();
     void close() {};
 
-    void handleWrite(const std::string& message);
+    void handleWrite(const std::vector<unsigned char>& message);
 
 private:
 	TcpConnection(boost::asio::io_context& io_context)
@@ -48,5 +48,5 @@ public:
     void start(short port);
     void stop();
 
-    void sendMessage(const std::string& message);
+    void sendMessage(const std::vector<unsigned char>& message);
 };

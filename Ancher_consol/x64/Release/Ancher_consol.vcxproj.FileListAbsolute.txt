@@ -1,4 +1,0 @@
-D:\Code\RTK-LaserBenchmark\Ancher_consol\x64\Release\LMF.Tracker.Connection.dll
-D:\Code\RTK-LaserBenchmark\Ancher_consol\x64\Release\LMF.Tracker.Connection.xml
-D:\Code\RTK-LaserBenchmark\Ancher_consol\Ancher_consol\x64\Release\Ancher_consol.vcxproj.AssemblyReference.cache
-D:\Code\RTK-LaserBenchmark\Ancher_consol\Ancher_consol\x64\Release\Ancher_c.EAC20C8B.Up2Date

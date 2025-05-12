@@ -6,10 +6,12 @@
 
 using namespace System;
 
+const char* ipAddress = "ATS500Simulator";
+//const char* ipAddress = "192.168.250.1";
 
 int main() {
 	solution::getInstance().initial();
-	ConnectTo("ATS600Simulator");
+	ConnectTo("AT500Simulator");
 	boost::asio::io_context io_context;
 	TcpServer server(io_context);
 	server.start(3001);
@@ -24,7 +26,8 @@ int main() {
 		if (message == "exit") {
 			break;
 		}
-		server.sendMessage(message);
+		std::vector<unsigned char> vec(message.begin(), message.end());
+		server.sendMessage(vec);
 	}
 
 	io_context.stop();

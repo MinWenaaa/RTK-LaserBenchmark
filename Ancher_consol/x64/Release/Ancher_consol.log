@@ -4,14 +4,17 @@
   - add _WIN32_WINNT=0x0601 to your project's Preprocessor Definitions.
   Assuming _WIN32_WINNT=0x0601 (i.e. Windows 7 target).
   tracker_manager.cpp
-D:\Code\RTK-LaserBenchmark\Ancher_consol\lib\tracker_manager.cpp(3,10): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
-D:\Code\RTK-LaserBenchmark\Ancher_consol\lib\tracker_manager.cpp(53,23): warning C4101: “ex”: 未引用的局部变量
+D:\Code\RTK-LaserBenchmark\Ancher_consol1\lib\tracker_manager.cpp(3,10): warning C4067: 预处理器指令后有意外标记 - 应输入换行符
+D:\package\boost_1_87_0\include\boost-1_87\boost\asio\detail\socket_types.hpp(24,1): error C1189: #error:  WinSock.h has already been included
+  (编译源文件“lib/tracker_manager.cpp”)
+  
   main.cpp
   Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
   - add -D_WIN32_WINNT=0x0601 to the compiler command line; or
   - add _WIN32_WINNT=0x0601 to your project's Preprocessor Definitions.
   Assuming _WIN32_WINNT=0x0601 (i.e. Windows 7 target).
-D:\Code\RTK-LaserBenchmark\Ancher_consol\main.cpp(35,9): warning C4161: #pragma managed(pop...): 出栈的比入栈的多
+D:\Code\RTK-LaserBenchmark\Ancher_consol1\main.cpp(38,9): warning C4161: #pragma managed(pop...): 出栈的比入栈的多
+  .NETFramework,Version=v4.8.AssemblyAttributes.cpp
   正在生成代码...
 D:\package\boost_1_87_0\include\boost-1_87\boost\asio\detail\impl\winsock_init.ipp(67,1): warning C4793: “boost::asio::detail::winsock_init_base::throw_on_error”: 编译为本机的函数:
 D:\package\boost_1_87_0\include\boost-1_87\boost\asio\detail\impl\winsock_init.ipp(67,1): warning C4793: 	托管代码中发现一个不受支持的内部函数
@@ -119,7 +122,3 @@ D:\package\boost_1_87_0\include\boost-1_87\boost\asio\execution\any_executor.hpp
 D:\package\boost_1_87_0\include\boost-1_87\boost\asio\execution\any_executor.hpp(1088,1): warning C4793: 	/clr 下不支持 varargs
 D:\package\boost_1_87_0\include\boost-1_87\boost\asio\execution\any_executor.hpp(1088,1): warning C4793: “boost::asio::execution::detail::any_executor_base::require_fn_impl<boost::asio::execution::any_executor<boost::asio::execution::context_as_t<boost::asio::execution_context &>,boost::asio::execution::detail::blocking::never_t<0>,boost::asio::execution::prefer_only<boost::asio::execution::detail::blocking::possibly_t<0> >,boost::asio::execution::prefer_only<boost::asio::execution::detail::outstanding_work::tracked_t<0> >,boost::asio::execution::prefer_only<boost::asio::execution::detail::outstanding_work::untracked_t<0> >,boost::asio::execution::prefer_only<boost::asio::execution::detail::relationship::fork_t<0> >,boost::asio::execution::prefer_only<boost::asio::execution::detail::relationship::continuation_t<0> > >,boost::asio::io_context::basic_executor_type<std::allocator<void>,4>,boost::asio::execution::prefer_only<boost::asio::execution::detail::relationship::continuation_t<0> > >”: 编译为本机的函数:
 D:\package\boost_1_87_0\include\boost-1_87\boost\asio\execution\any_executor.hpp(1088,1): warning C4793: 	/clr 下不支持 varargs
-  LINK : 已指定 /LTCG，但不需要生成代码；从链接命令行中移除 /LTCG 以提高链接器性能
-  Ancher_consol.vcxproj -> D:\Code\RTK-LaserBenchmark\Ancher_consol\x64\Release\Ancher_consol.exe
-  'pwsh.exe' 不是内部或外部命令，也不是可运行的程序
-  或批处理文件。

@@ -29,7 +29,7 @@ void TcpConnection::handleRead(std::function<void(const std::string&)> callback)
 	);
 }
 
-void TcpConnection::handleWrite(const std::string& message) {
+void TcpConnection::handleWrite(const std::vector<unsigned char>& message) {
 	auto self(shared_from_this());
 	boost::asio::async_write(socket_, boost::asio::buffer(message),
 		[this, self](boost::system::error_code ec, std::size_t length) {
@@ -68,6 +68,7 @@ void TcpServer::handle_accept(TcpConnection::pointer new_connection,
 }
 
 void TcpServer::start(short port) {
+	std::cout << "start listen to port " << port << std::endl;
 	boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port);
 	acceptor_.open(endpoint.protocol());
 	acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
@@ -80,7 +81,7 @@ void TcpServer::stop() {
 	acceptor_.close();
 }
 
-void TcpServer::sendMessage(const std::string& message) {
+void TcpServer::sendMessage(const std::vector<unsigned char>& message) {
 	if (current_connection_) {
 		current_connection_->handleWrite(message);
 	}
