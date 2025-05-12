@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
@@ -71,6 +72,7 @@ class ConnectionProvider with ChangeNotifier {
 
 
   // 测量数据
+  List<double> currentCoord = [0, 0, 0]; 
   List<MeasurePoint> _measurePoints = [];
 
   late Uint8List _bitmapImage = Uint8List(0);
@@ -79,13 +81,20 @@ class ConnectionProvider with ChangeNotifier {
   void _handleIncomingData(List<int> data) {
     try {
       final ByteData byteData = ByteData.sublistView(Uint8List.fromList(data));
-      final int type = byteData.getUint32(0, Endian.little);
+      final int type = byteData.getUint8(0);
 
       if (type == 1) {
         // 位图数据
         final int bitmapDataSize = byteData.getUint32(4, Endian.little);
         _bitmapImage = Uint8List.fromList(data.sublist(8, 8 + bitmapDataSize));
         _response = "Bitmap data received";
+        notifyListeners();
+      } else if(type ==2){
+        // 坐标数据流
+        currentCoord[0] = byteData.getFloat32(1, Endian.little); 
+        currentCoord[1] = byteData.getFloat32(5, Endian.little); 
+        currentCoord[2] = byteData.getFloat32(9, Endian.little); 
+        _response = "Coordinate data received";
         notifyListeners();
       } else {
         _response = "${data.length} bytes received";

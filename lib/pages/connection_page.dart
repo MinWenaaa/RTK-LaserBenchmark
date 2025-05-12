@@ -15,16 +15,6 @@ class _ConnectionPageState extends State<ConnectionPage> {
   TextEditingController _hostControler = TextEditingController();
   TextEditingController _portControler = TextEditingController();
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final state = Provider.of<ConnectionProvider>(context).state;
-    if (state == AncherConnectionState.connected) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pop(context);
-      });
-    }
-  }
 
   static const List<Color> colors = [Colors.black26, Colors.green, Colors.blue];
   static const List<String> text = ["连接中...", "连接成功", "连接"];

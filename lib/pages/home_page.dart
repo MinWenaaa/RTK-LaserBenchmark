@@ -13,18 +13,27 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool _isBottomSheetOpen = false;
+
   @override
   void didChangeDependencies() {
     log("HomePage: didChangeDependencies called!");
     super.didChangeDependencies();
     final state = Provider.of<ConnectionProvider>(context).state;
-    if (state == AncherConnectionState.error) {
+    if (state == AncherConnectionState.error && !_isBottomSheetOpen) {
+      _isBottomSheetOpen = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showModalBottomSheet(
           context: context,
-          builder: (context) => const ConnectionPage(), backgroundColor: Colors.white
-        );
+          builder: (context) => const ConnectionPage(), 
+          backgroundColor: Colors.white
+        ).whenComplete(() {
+          _isBottomSheetOpen = false;
+        });
       });
+    } else if (state == AncherConnectionState.connected) {
+      _isBottomSheetOpen = false;
+      log("HomePage: connected!");
     }
   }
 
@@ -35,6 +44,12 @@ class _HomePageState extends State<HomePage> {
         _bitmapViewer(),
         _measureDiv(),
         const SizedBox(height: 10),
+        Selector<ConnectionProvider, String?>(
+          selector: (context, provider) => provider.response,
+          builder: (context, response, child) {
+            return Text(response ?? "等待连接");
+          },
+        ),
         Expanded(
           child: _historyList()
         )
@@ -47,7 +62,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _bitmapViewer() {
     return AspectRatio(
-      aspectRatio: 1,
+      aspectRatio: 4.0/3.0,
       child: Stack(
         children: [
           Consumer<ConnectionProvider>(
@@ -86,20 +101,26 @@ class _HomePageState extends State<HomePage> {
           Container(
             alignment: Alignment.center,
             width: double.infinity, 
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             decoration: BoxDecoration(
               color: IndSoft.instance.deepBack,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _coord(axis: "X", value: 43.12),
-                _coord(axis:"Y", value: 19.46),
-                _coord(axis:"Z", value: 12.34),
-              ],)
+            child: Selector<ConnectionProvider, List>(
+              selector: (context, provider) => provider.currentCoord,
+              builder: (context, coord, child) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    _coord(axis: "X", value: coord[0]),
+                    _coord(axis:"Y", value: coord[1]),
+                    _coord(axis:"Z", value: coord[2]),
+                  ],
+                );
+              }
             ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             child: SizedBox(
@@ -134,7 +155,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         Text("$axis 轴", style: TextStyle(color: IndSoft.instance.text3, fontSize: 16)),
         const SizedBox(height: 2),
-        Text("$value", style: TextStyle(color: IndSoft.instance.primary, fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(value.toStringAsFixed(3).padLeft(8, ' '), style: TextStyle(color: IndSoft.instance.primary, fontSize: 20, fontWeight: FontWeight.bold)),
       ],
     );
   }
