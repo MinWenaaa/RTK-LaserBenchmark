@@ -4,18 +4,20 @@
 #include "server.h"
 #include "tracker_manager.h"
 
+TcpServer* TcpServer::instance_ = nullptr;
+std::mutex TcpServer::instance_mutex_;
+
 void TcpConnection::start() {
-	handleRead(measure);
+	handleRead(handleCommand);
 }
 
-void TcpConnection::handleRead(std::function<void(const std::string&)> callback) {
+void TcpConnection::handleRead(std::function<void(const uint8_t*, std::size_t)> callback) {
 	auto self(shared_from_this());
+	std::cout << "handleRead called!" << std::endl;
 	socket_.async_read_some(boost::asio::buffer(buffer_),
 		[this, self, callback](boost::system::error_code ec, std::size_t length) {
 			if (!ec) {
-				std::string message(buffer_.data(), length);
-				std::cout << "Received: " << message << std::endl;
-				if (callback) callback(message);
+				if (callback) callback(reinterpret_cast<const uint8_t*>(buffer_.data()), length);
 				handleRead(callback);
 			} else {
 				if (ec == boost::asio::error::eof) {
@@ -29,21 +31,20 @@ void TcpConnection::handleRead(std::function<void(const std::string&)> callback)
 	);
 }
 
-void TcpConnection::handleWrite(const std::vector<unsigned char>& message) {
-	auto self(shared_from_this());
-	boost::asio::async_write(socket_, boost::asio::buffer(message),
-		[this, self](boost::system::error_code ec, std::size_t length) {
+void TcpConnection::handleWrite(const uint8_t* data, std::size_t size) {
+	auto buffer = std::make_shared<std::vector<char>>(data, data + size);
+	boost::asio::async_write(socket_, boost::asio::buffer(*buffer),
+		[buffer](boost::system::error_code ec, std::size_t length) {
 			if (ec) {
 				std::cerr << "Error: " << ec.message() << std::endl;
-				close();
 			}
 		}
 	);
 }
 
 void TcpServer::start_accept() {
-	TcpConnection::pointer new_connection = TcpConnection::create(io_context_);
-	acceptor_.async_accept(new_connection->socket(),
+	TcpConnection::pointer new_connection = TcpConnection::create(*io_context_);
+	acceptor_->async_accept(new_connection->socket(),
 		boost::bind(&TcpServer::handle_accept, this, new_connection,
 		boost::asio::placeholders::error));
 }
@@ -68,22 +69,21 @@ void TcpServer::handle_accept(TcpConnection::pointer new_connection,
 }
 
 void TcpServer::start(short port) {
-	std::cout << "start listen to port " << port << std::endl;
 	boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::tcp::v4(), port);
-	acceptor_.open(endpoint.protocol());
-	acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
-	acceptor_.bind(endpoint);
-	acceptor_.listen();
+	acceptor_->open(endpoint.protocol());
+	acceptor_->set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+	acceptor_->bind(endpoint);
+	acceptor_->listen();
 	start_accept();
 }
 
 void TcpServer::stop() {
-	acceptor_.close();
+	acceptor_->close();
 }
 
-void TcpServer::sendMessage(const std::vector<unsigned char>& message) {
+void TcpServer::sendMessage(const uint8_t* data, std::size_t size) {
 	if (current_connection_) {
-		current_connection_->handleWrite(message);
+		current_connection_->handleWrite(data, size);
 	}
 	else {
 		std::cerr << "No active connection to send message" << std::endl;

@@ -20,11 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lib\server.cpp" />
+    <ClCompile Include="lib\solution.cpp" />
     <ClCompile Include="lib\tracker_manager.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\server.h" />
+    <ClInclude Include="include\solution.h" />
     <ClInclude Include="include\tracker_manager.h" />
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,9 @@
     <Filter Include="tracker_manager">
       <UniqueIdentifier>{7fee2d1a-fc51-4340-8ba2-0e01c551f284}</UniqueIdentifier>
     </Filter>
+    <Filter Include="solution">
+      <UniqueIdentifier>{9d24a282-f6fd-4b2c-995a-740e953667c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -20,6 +23,9 @@
     <ClCompile Include="lib\tracker_manager.cpp">
       <Filter>tracker_manager</Filter>
     </ClCompile>
+    <ClCompile Include="lib\solution.cpp">
+      <Filter>solution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\server.h">
@@ -27,6 +33,9 @@
     </ClInclude>
     <ClInclude Include="include\tracker_manager.h">
       <Filter>tracker_manager</Filter>
+    </ClInclude>
+    <ClInclude Include="include\solution.h">
+      <Filter>solution</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

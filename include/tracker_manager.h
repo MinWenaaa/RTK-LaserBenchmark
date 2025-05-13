@@ -1,44 +1,56 @@
-#pragma once
-#include <string>
-#include <chrono>
-#include <iomanip>
-#include <sstream>
-#include <mutex>
+#pragma once  
+#include <string>  
+#include <chrono>  
+#include <vector>  
+#include "solution.h"  
 
-using namespace System;
-using namespace LMF::Tracker;
+using namespace System;  
+using namespace LMF::Tracker;  
+using namespace LMF::Tracker::Measurements;
+using namespace LMF::Tracker::MeasurementResults;
+using namespace LMF::Tracker::Enums;
+using namespace LMF::Tracker::ErrorHandling;
+using namespace LMF::Tracker::Targets;
 
-void ConnectTo(const char* ipAdress);
+void ConnectTo(const char* ipAdress);  
 
-void measure(const std::string& pointNum);
+void handleCommand(const uint8_t*, std::size_t);  
 
-class solution {
-private:
-	solution() {
-	}
-	solution(const solution&) = delete;
-	solution& operator=(const solution) = delete;
+ref class TrackerManager {  
+public:  
+    static Tracker^ LMFTracker = nullptr;  
+    static MeasurementResults::Measurement^ LastMeasurement = nullptr;  
 
-public:
-	static solution& getInstance() {
-		static solution instance;
-		return instance;
-	}
+    // 影像数据流  
+    static void OnImageArrived(LMF::Tracker::OVC::OverviewCamera^ sender, array<System::Byte>^% image, OVC::ATRCoordinateCollection^ atrcoordinates) {  
+	    pin_ptr<Byte> pinnedImage = &image[0];  
+	    uint8_t* nativeImage = reinterpret_cast<uint8_t*>(pinnedImage);  
+	    solution::getInstance().poccessImg(nativeImage);  
+    }  
 
-	void initial();
-	static std::string measure_data_file_path;
-	static std::mutex processMutex;
-    static std::chrono::steady_clock::time_point lastProcessedTime;
+    // 坐标数据流  
+    static void OnTargetPostionChanged(LMF::Tracker::Tracker^ sender, LMF::Tracker::MeasurementResults::SingleShotMeasurement3D^ position) {
+	    float coord1 = position->Position->Coordinate1->Value;  
+	    float coord2 = position->Position->Coordinate2->Value;
+	    float coord3 = position->Position->Coordinate3->Value;
 
-    void poccessImg(array<System::Byte>^ image);
-};
+	    solution::getInstance().sendCurrentPosition(coord1, coord2, coord3);  
+    }  
 
-ref class TrackerManager {
-public:
-	static Tracker^ LMFTracker = nullptr;
-	static MeasurementResults::Measurement^ LastMeasurement = nullptr;
+   static void OnMeasurementArrived(MeasurementSettings^ sender, MeasurementCollection^ measurements, LmfException^ exception) {
+       std::cout << "onMeasurementArrived!" << std::endl;
+      if (measurements != nullptr && measurements->Count > 0) {   
+          StationaryMeasurement3D^ stationaryMeas3D = dynamic_cast<StationaryMeasurement3D^>(measurements[0]);
+          if (stationaryMeas3D != nullptr) {  
+              // 处理测量数据  
+              double coord1 = stationaryMeas3D->Position->Coordinate1->Value;  
+              double coord2 = stationaryMeas3D->Position->Coordinate2->Value;
+              double coord3 = stationaryMeas3D->Position->Coordinate3->Value;
+              solution::getInstance().sendCurrentPosition(coord1, coord2, coord3);  
+          }  
+      }  
+      else if (exception != nullptr) {  
 
-	static void OnImageArrived(LMF::Tracker::OVC::OverviewCamera^ sender, array<System::Byte>^% image, OVC::ATRCoordinateCollection^ atrcoordinates) {
-		solution::getInstance().poccessImg(image);
-	}
+      }  
+   }
 };

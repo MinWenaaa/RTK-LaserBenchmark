@@ -1,24 +1,29 @@
 #include <iostream>
 #include <vcclr.h>
-
 #include "tracker_manager.h"
 #include "server.h"
+#include "solution.h"
 
 using namespace System;
 
-const char* ipAddress = "ATS500Simulator";
-//const char* ipAddress = "192.168.250.1";
 
 int main() {
 	solution::getInstance().initial();
 	ConnectTo("AT500Simulator");
-	boost::asio::io_context io_context;
-	TcpServer server(io_context);
-	server.start(3001);
+
+	auto io_context = std::make_shared<boost::asio::io_context>();
+	TcpServer::getInstance()->initial(*io_context);
+	TcpServer* server = TcpServer::getInstance();
+	server->start(3001);
 
 	std::thread io_thread([&io_context]() {
-		io_context.run();
-		});
+		try {
+			io_context->run();
+		}
+		catch (const std::exception& e) {
+			std::cerr << "IO thread exception: " << e.what() << std::endl;
+		}
+	});
 
 	while (true) {
 		std::string message;
@@ -26,11 +31,10 @@ int main() {
 		if (message == "exit") {
 			break;
 		}
-		std::vector<unsigned char> vec(message.begin(), message.end());
-		server.sendMessage(vec);
+		//server->sendMessage(message);
 	}
 
-	io_context.stop();
+	io_context->stop();
 	io_thread.join();
 
 	return 0;
