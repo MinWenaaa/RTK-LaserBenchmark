@@ -70,15 +70,25 @@ class _HomePageState extends State<HomePage> {
       child: Stack(
         children: [
           Consumer<ConnectionProvider>(
-            builder: (context, provider, child) {
-              if (provider.bitmapImage.isNotEmpty) {
-                return Image.memory(provider.bitmapImage);
-              } else {
-                return SizedBox.expand(
-                  child: ColoredBox(color: IndSoft.instance.text1));
-              }
-            },
-          ),
+          builder: (context, provider, child) {
+            if (provider.bitmapImage.isNotEmpty) {
+              // 渲染图像数据
+              return Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.rotationX(3.14159), // 旋转 180 度（倒置图片）
+                child: Image.memory(
+                  provider.bitmapImage,
+                  fit: BoxFit.cover,
+                  //gaplessPlayback: true,
+                )
+              );
+            } else {
+              return SizedBox.expand(
+                child: ColoredBox(color: IndSoft.instance.text1),
+              );
+            }
+          },
+        ),
           const Positioned(
             bottom: 10, right: 10,
             child: Row(

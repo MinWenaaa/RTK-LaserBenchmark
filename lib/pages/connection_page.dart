@@ -12,8 +12,8 @@ class ConnectionPage extends StatefulWidget {
 
 class _ConnectionPageState extends State<ConnectionPage> {
 
-  TextEditingController _hostControler = TextEditingController();
-  TextEditingController _portControler = TextEditingController();
+  TextEditingController _hostControler = TextEditingController(text: "192.168.90.249");
+  TextEditingController _portControler = TextEditingController(text: "3001");
 
 
   static const List<Color> colors = [Colors.black26, Colors.green, Colors.blue];
@@ -44,16 +44,19 @@ class _ConnectionPageState extends State<ConnectionPage> {
           const SizedBox(height: 15),
           Selector<ConnectionProvider, AncherConnectionState>(
             selector: (context, provider) => provider.state,
-            builder: (context, state, child) => OutlinedButton(
+            builder: (context, state, child) => ElevatedButton(
               onPressed: () => Provider.of<ConnectionProvider>(context, listen: false).connectToServer(_hostControler.text, int.parse(_portControler.text)),
-              child: Text(text[state.index], style: IndSoft.instance.standardText,),
               style: OutlinedButton.styleFrom(
-                minimumSize: Size(160, 40),
+                minimumSize: const Size(220, 40),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)
                 ),
-                backgroundColor: colors[state.index]
+                backgroundColor: colors[state.index],
               ),
+              child: Text(text[state.index], style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              )),
             )
           )
         ],

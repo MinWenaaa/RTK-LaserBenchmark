@@ -107,43 +107,76 @@ class ConnectionProvider with ChangeNotifier {
   late Uint8List _bitmapImage = Uint8List(0);
   Uint8List get bitmapImage => _bitmapImage;
 
+  BytesBuilder _bitmapImageBuilder = BytesBuilder();
+  Uint8List _receiveBuffer = Uint8List(0);  
+
   void _handleIncomingData(List<int> data) {
-    try {
-      final ByteData byteData = ByteData.sublistView(Uint8List.fromList(data));
-      final int type = byteData.getUint8(0);
-      log("command $type received");
+    _receiveBuffer = Uint8List.fromList([..._receiveBuffer.buffer.asUint8List(), ... data]);
+    log("Received data: ${data.length} bytes, now data is ${_receiveBuffer.lengthInBytes} bytes");
+
+    while (_receiveBuffer.lengthInBytes >= 5) {
+      final int type = _receiveBuffer[0];
+
+      log("data to process: ${_receiveBuffer.lengthInBytes} bytes, type: $type");
       if (type == 1) {
         // 位图数据
-        final int bitmapDataSize = byteData.getUint32(4, Endian.little);
-        _bitmapImage = Uint8List.fromList(data.sublist(8, 8 + bitmapDataSize));
-        _response = "Bitmap data received";
-        notifyListeners();
+        if (_receiveBuffer.lengthInBytes < 5) break; // 确保至少有头部数据
+        final int batchSize = _receiveBuffer[1]; // 总切片数
+        final int currentBatch = _receiveBuffer[2]; // 当前切片编号
+        final int chunkSize = ByteData.sublistView(_receiveBuffer, 3, 5).getUint16(0, Endian.little); // 当前切片大小
+
+        if (_receiveBuffer.lengthInBytes < 5 + chunkSize) break;
+
+        _bitmapImageBuilder.add(_receiveBuffer.sublist(5, 5 + chunkSize));
+
+        log("Chunk $currentBatch/$batchSize received, size: $chunkSize bytes");
+
+        _receiveBuffer = _receiveBuffer.sublist(5 + chunkSize);
+
+        if (currentBatch + 1 == batchSize) {
+          _bitmapImage = _bitmapImageBuilder.takeBytes();
+          _bitmapImageBuilder = BytesBuilder(); // 重置
+          log("Full image received, total size: ${_bitmapImage.length} bytes");
+          notifyListeners();
+        }
+
       } else if(type ==2){
         // 坐标数据流
-        currentCoord[0] = byteData.getFloat32(1, Endian.little); 
-        currentCoord[1] = byteData.getFloat32(5, Endian.little); 
-        currentCoord[2] = byteData.getFloat32(9, Endian.little); 
+        currentCoord[0] = ByteData.sublistView(_receiveBuffer, 1, 5).getFloat32(0, Endian.little); 
+        currentCoord[1] = ByteData.sublistView(_receiveBuffer, 5, 9).getFloat32(0, Endian.little); 
+        currentCoord[2] = ByteData.sublistView(_receiveBuffer, 9, 13).getFloat32(0, Endian.little); 
+        _receiveBuffer = _receiveBuffer.sublist(13);
+        
         //_response = "Coordinate data received";
         notifyListeners();
       } else if (type==3) {
         // 测量数据
-        final int nameLen = byteData.getUint8(1); 
-        final String name = String.fromCharCodes(data.sublist(2, 2 + nameLen)); 
-        final double x = byteData.getFloat64(2 + nameLen, Endian.little); 
-        final double y = byteData.getFloat64(2 + nameLen + 8, Endian.little);
-        final double z = byteData.getFloat64(2 + nameLen + 16, Endian.little); 
+        final int nameLen = _receiveBuffer[1]; 
+        final String name = String.fromCharCodes(_receiveBuffer.sublist(2, 2 + nameLen)); 
+        final int start = 2 + nameLen;
+        final double x = ByteData.sublistView(_receiveBuffer, start, start+8).getFloat64(0, Endian.little); 
+        final double y = ByteData.sublistView(_receiveBuffer, start+8, start+16).getFloat64(0, Endian.little);
+        final double z = ByteData.sublistView(_receiveBuffer, start+16, start+24).getFloat64(0, Endian.little); 
 
         measurePointsNotifier.value = [...measurePointsNotifier.value, MeasurePoint(name: name, x: x, y: y, z: z)];
+        _receiveBuffer = _receiveBuffer.sublist(2 + nameLen + 24);
         _response = "Measurement data received.";
+        
         log("Measurement data received: $name, x=$x, y=$y, z=$z");
         notifyListeners();
+      } else if (type == 4) {
+        // 图片刷新
+        _bitmapImage = Uint8List(0);
+        log("now data is ${_receiveBuffer.lengthInBytes} bytes");
+        _receiveBuffer = _receiveBuffer.sublist(2);
+        
       } else {
-        log("${data.length} bytes received");
+        log("now data is ${_receiveBuffer.lengthInBytes} bytes");
         notifyListeners();
+        break; 
       }
-    } catch (e) {
-      log("Error handling incoming data: $e");
-    }
+      log("now data is ${_receiveBuffer.lengthInBytes} bytes");
+    } 
   }
 
 }
