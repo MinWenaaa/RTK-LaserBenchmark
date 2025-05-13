@@ -3,31 +3,30 @@
   - add -D_WIN32_WINNT=0x0601 to the compiler command line; or
   - add _WIN32_WINNT=0x0601 to your project's Preprocessor Definitions.
   Assuming _WIN32_WINNT=0x0601 (i.e. Windows 7 target).
-D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\lib\solution.cpp(93,18): warning C4267: “初始化”: 从“size_t”转换到“uint8_t”，可能丢失数据
-  tracker_manager.cpp
-D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\tracker_manager.h(33,19): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-  (编译源文件“lib/tracker_manager.cpp”)
-  
-D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\tracker_manager.h(34,19): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-  (编译源文件“lib/tracker_manager.cpp”)
-  
-D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\tracker_manager.h(35,19): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-  (编译源文件“lib/tracker_manager.cpp”)
-  
-D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\tracker_manager.h(49,75): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
-  (编译源文件“lib/tracker_manager.cpp”)
-  
-D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\tracker_manager.h(49,67): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
-  (编译源文件“lib/tracker_manager.cpp”)
-  
-D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\tracker_manager.h(49,59): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
-  (编译源文件“lib/tracker_manager.cpp”)
-  
-  正在生成代码...
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\lib\solution.cpp(59,17): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\lib\solution.cpp(118,18): warning C4267: “初始化”: 从“size_t”转换到“uint8_t”，可能丢失数据
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(479,1): warning C4793: “`anonymous namespace'::stbiw__outfile”: 编译为本机的函数:
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(479,1): warning C4793: 	/clr 下不支持 varargs
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(484,1): warning C4793: “`anonymous namespace'::stbiw__outfile”: 编译为本机的函数:
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(484,1): warning C4793: 	托管代码中发现一个不受支持的内部函数
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(486,1): warning C4793: “`anonymous namespace'::stbiw__outfile”: 编译为本机的函数:
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(486,1): warning C4793: 	托管代码中发现一个不受支持的内部函数
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(379,1): warning C4793: “`anonymous namespace'::stbiw__writef”: 编译为本机的函数:
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(379,1): warning C4793: 	/clr 下不支持 varargs
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(381,1): warning C4793: “`anonymous namespace'::stbiw__writef”: 编译为本机的函数:
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(381,1): warning C4793: 	托管代码中发现一个不受支持的内部函数
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(383,1): warning C4793: “`anonymous namespace'::stbiw__writef”: 编译为本机的函数:
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(383,1): warning C4793: 	托管代码中发现一个不受支持的内部函数
 D:\package\boost_1_87_0\include\boost-1_87\boost\asio\detail\impl\winsock_init.ipp(67,1): warning C4793: “boost::asio::detail::winsock_init_base::throw_on_error”: 编译为本机的函数:
 D:\package\boost_1_87_0\include\boost-1_87\boost\asio\detail\impl\winsock_init.ipp(67,1): warning C4793: 	托管代码中发现一个不受支持的内部函数
 D:\package\boost_1_87_0\include\boost-1_87\boost\asio\detail\win_thread.hpp(48,1): warning C4793: “boost::asio::detail::win_thread_base<boost::asio::detail::win_thread>::terminate_threads”: 编译为本机的函数:
 D:\package\boost_1_87_0\include\boost-1_87\boost\asio\detail\win_thread.hpp(48,1): warning C4793: 	托管代码中发现一个不受支持的内部函数
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(354,1): warning C4793: “`anonymous namespace'::stbiw__writefv”: 编译为本机的函数:
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(354,1): warning C4793: 	托管代码中发现一个不受支持的内部函数
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(357,1): warning C4793: “`anonymous namespace'::stbiw__writefv”: 编译为本机的函数:
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(357,1): warning C4793: 	托管代码中发现一个不受支持的内部函数
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(363,1): warning C4793: “`anonymous namespace'::stbiw__writefv”: 编译为本机的函数:
+D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\include\stb_image_write.h(363,1): warning C4793: 	托管代码中发现一个不受支持的内部函数
   server.obj : 遇到了 MSIL 模块；对 MSIL 禁用了增量链接；正在执行完全链接
   Ancher_consol.vcxproj -> D:\Code\RTK-LaserBenchmark\RTK-LaserBenchmark1\x64\Debug\Ancher_consol.exe
   'pwsh.exe' 不是内部或外部命令，也不是可运行的程序

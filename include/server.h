@@ -40,7 +40,6 @@ private:
     // 私有成员变量
     boost::asio::io_context* io_context_;
     boost::asio::ip::tcp::acceptor* acceptor_;
-    boost::shared_ptr<TcpConnection> current_connection_;
 
     // 静态实例
     static TcpServer* instance_;
@@ -59,6 +58,8 @@ public:
         }
         return instance_;
     }
+
+    boost::shared_ptr<TcpConnection> current_connection_;
 
     // 初始化方法
     void initial(boost::asio::io_context& io_context) {

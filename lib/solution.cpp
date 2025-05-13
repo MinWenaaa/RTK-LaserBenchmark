@@ -2,13 +2,19 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include <vector>
 
 #include "solution.h"
 #include "server.h"
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 std::string solution::measure_data_file_path;
 std::chrono::steady_clock::time_point solution::lastImgTime = std::chrono::steady_clock::now();
 std::chrono::steady_clock::time_point solution::lastPositionTime = std::chrono::steady_clock::now();
+
+const int chunkSize = 3000;
 
 void solution::initial() {
 	auto now = std::chrono::system_clock::now();
@@ -28,8 +34,10 @@ void solution::initial() {
 }
 
 void solution::poccessImg(const uint8_t* image) {
+	if (!TcpServer::getInstance()->current_connection_) return;
+
 	auto now = std::chrono::steady_clock::now();
-	std::chrono::seconds interval(5);
+	std::chrono::milliseconds interval(200);
 
 	if (now - lastImgTime >= interval) {
 		lastImgTime = now;
@@ -38,28 +46,45 @@ void solution::poccessImg(const uint8_t* image) {
 		BITMAPFILEHEADER* bmfh = (BITMAPFILEHEADER*)image;
 		BITMAPINFOHEADER* bmih = (BITMAPINFOHEADER*)(image + sizeof(BITMAPFILEHEADER));
 		uint8_t* bits = (uint8_t*)(image + bmfh->bfOffBits);
+		int width = bmih->biWidth, height = bmih->biHeight, channels = bmih->biBitCount / 8;
+		auto write_callback = [](void* context, void* data, int size) {
+			auto* buf = reinterpret_cast<std::vector<uint8_t>*>(context);
+			buf->insert(buf->end(), (uint8_t*)data, (uint8_t*)data + size);
+		};
 
-		// 处理图像数据
+		std::vector<uint8_t> outMessage;
+		stbi_write_jpg_to_func(write_callback, &outMessage, width, height, channels, bits, 90); // 90为压缩质量
 
-		//uint32_t bitmapDataSize = bmfh->bfSize;
-		//uint32_t packetSize = sizeof(uint32_t) * 2 + bitmapDataSize;
-		//char* packet = new char[packetSize];
+		TcpServer* server = TcpServer::getInstance();
+		int totalSize = outMessage.size();
+		uint8_t batchSize = totalSize / chunkSize + (totalSize % chunkSize != 0 ? 1 : 0);
+		uint8_t* data = new uint8_t[2];
+		// 图片刷新信号
+		std::cout << "new img batch size: " << static_cast<int>(batchSize) << std::endl;
+		data[0] = 4; data[1] = batchSize;
+		server->sendMessage(data, 2);
+		delete[] data;
+		
+		data = new uint8_t[chunkSize+5];
+		data[0] = 1;
+		data[1] = batchSize;
+		for (int i = 0; i < outMessage.size(); i+=chunkSize) {
+			data[2] = static_cast<uint8_t>(i / chunkSize);
+			size_t bytesToCopy = std::min(chunkSize, totalSize - i);
+			data[3] = static_cast<uint8_t>(bytesToCopy & 0xFF);         
+			data[4] = static_cast<uint8_t>((bytesToCopy >> 8) & 0xFF); 
+			memcpy(data + 5, outMessage.data() + i, bytesToCopy);
+			server->sendMessage(data, bytesToCopy + 5);
+			std::cout << "send clip of " << bytesToCopy << " bytes; total size: " << totalSize << std::endl;
+		}
 
-		//// 填充数据包
-		//uint8_t type = 1; // 1 表示位图数据
-		//memcpy(packet, &type, sizeof(uint32_t));
-		//memcpy(packet + sizeof(uint32_t), &bitmapDataSize, sizeof(uint32_t));
-		//memcpy(packet + sizeof(uint32_t) + sizeof(uint32_t), image, bitmapDataSize);
-
-		//// 发送数据包
-		//TcpServer* server = TcpServer::getInstance();
-		//server->sendMessage(packet, packetSize);
-		//std::cout << packetSize << std::endl;
-		//delete[] packet;
+		delete[] data;
 	}
 }
 
 void solution::sendCurrentPosition(float x, float y, float z) {
+	if (!TcpServer::getInstance()->current_connection_) return;
+
 	auto now = std::chrono::steady_clock::now();
 	std::chrono::milliseconds interval(100);
 	if (now - lastPositionTime >= interval) {

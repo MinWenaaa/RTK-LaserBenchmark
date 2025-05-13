@@ -86,6 +86,6 @@ void TcpServer::sendMessage(const uint8_t* data, std::size_t size) {
 		current_connection_->handleWrite(data, size);
 	}
 	else {
-		std::cerr << "No active connection to send message" << std::endl;
+		//std::cerr << "No active connection to send message" << std::endl;
 	}
 }
