@@ -14,10 +14,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _isBottomSheetOpen = false;
+  TextEditingController _nameController = TextEditingController();
 
   @override
   void didChangeDependencies() {
-    log("HomePage: didChangeDependencies called!");
+    //log("HomePage: didChangeDependencies called!");
     super.didChangeDependencies();
     final state = Provider.of<ConnectionProvider>(context).state;
     if (state == AncherConnectionState.error && !_isBottomSheetOpen) {
@@ -33,7 +34,7 @@ class _HomePageState extends State<HomePage> {
       });
     } else if (state == AncherConnectionState.connected) {
       _isBottomSheetOpen = false;
-      log("HomePage: connected!");
+      //log("HomePage: connected!");
     }
   }
 
@@ -47,7 +48,10 @@ class _HomePageState extends State<HomePage> {
         Selector<ConnectionProvider, String?>(
           selector: (context, provider) => provider.response,
           builder: (context, response, child) {
-            return Text(response ?? "等待连接");
+            return Text(response ?? "等待连接",
+              maxLines: 1, // 限制为一行
+              overflow: TextOverflow.ellipsis, 
+            );
           },
         ),
         Expanded(
@@ -126,6 +130,7 @@ class _HomePageState extends State<HomePage> {
             child: SizedBox(
               width: double.infinity, height: 48,
               child: TextField(
+                controller: _nameController,
                 decoration: IndSoft.instance.inputTheme("请输入测量点名称"),
                 onChanged: (value) {
                   // Handle input change
@@ -136,7 +141,19 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             child: ElevatedButton(
-              onPressed: (){}, 
+              onPressed: (){
+                final name = _nameController.text.trim();
+                  if (name.isNotEmpty) {
+                    Provider.of<ConnectionProvider>(context, listen: false)
+                      .measureCommand(name).then((_) {
+                        _nameController.clear();
+                      }).catchError((error) {
+                        log("测量点记录失败: $error");
+                      });
+                  } else {
+                    log("测量点名称不能为空");
+                  }
+              }, 
               style: IndSoft.instance.primButton,
               child: Container(
                 width: double.infinity, height: 44,
@@ -161,26 +178,34 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _historyList() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12),
+    return ValueListenableBuilder<List<MeasurePoint>>(
+    valueListenable: Provider.of<ConnectionProvider>(context, listen: false).measurePointsNotifier,
+    builder: (context, measurePoints, child) {
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12),
         color: Colors.white,
         child: ListView.builder(
-          itemCount: 10,
+          itemCount: measurePoints.length,
           itemBuilder: (context, index) {
+            final point = measurePoints[index];
             return ListTile(
-              title: Text("测量点 $index"),
-              subtitle: Text("坐标: (x, y, z)"),
+              title: Text(point.name),
+              subtitle: Text(
+                "坐标: (${point.x.toStringAsFixed(3)}, ${point.y.toStringAsFixed(3)}, ${point.z.toStringAsFixed(3)})",
+              ),
               trailing: IconButton(
-                icon: const Icon(Icons.delete),
+                icon: const Icon(Icons.delete, color: Colors.red),
                 onPressed: () {
-                  // Handle delete action
+                  Provider.of<ConnectionProvider>(context, listen: false)
+                      .removeMeasurePoint(index);
                 },
               ),
             );
           },
         ),
-    
-    );
+      );
+    },
+  );
   }
 }
 

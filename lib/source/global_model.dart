@@ -69,12 +69,41 @@ class ConnectionProvider with ChangeNotifier {
     }
   }
 
+  Future<void> measureCommand(String name) async {
+    if (_socket == null || _state != AncherConnectionState.connected) {
+      log("Socket is not connected");
+      throw Exception("Socket is not connected");
+    }
 
+    try {
+      final List<int> data = [1]; 
+      data.addAll(name.codeUnits); 
+      _socket!.add(data);
+      log("Measurement command sent: $name");
+    } catch (e) {
+      log("Error sending measurement command: $e");
+      throw Exception("Error sending measurement command: $e");
+    }
+  }
+
+  Future<void> removeMeasurePoint(int index) async {
+    String name = measurePointsNotifier.value[index].name;
+    measurePointsNotifier.value = List.from(measurePointsNotifier.value)..removeAt(index);
+
+    try {
+      final List<int> data = [2]; 
+      data.addAll(name.codeUnits); 
+      _socket!.add(data);
+      log("Measurement point removed: $name");
+    } catch (e) {
+      log("Error removing measurement point: $e");
+      throw Exception("Error removing measurement point: $e");
+    }
+  }
 
   // 测量数据
   List<double> currentCoord = [0, 0, 0]; 
-  List<MeasurePoint> _measurePoints = [];
-
+  final ValueNotifier<List<MeasurePoint>> measurePointsNotifier = ValueNotifier([]);
   late Uint8List _bitmapImage = Uint8List(0);
   Uint8List get bitmapImage => _bitmapImage;
 
@@ -82,7 +111,7 @@ class ConnectionProvider with ChangeNotifier {
     try {
       final ByteData byteData = ByteData.sublistView(Uint8List.fromList(data));
       final int type = byteData.getUint8(0);
-
+      log("command $type received");
       if (type == 1) {
         // 位图数据
         final int bitmapDataSize = byteData.getUint32(4, Endian.little);
@@ -94,10 +123,22 @@ class ConnectionProvider with ChangeNotifier {
         currentCoord[0] = byteData.getFloat32(1, Endian.little); 
         currentCoord[1] = byteData.getFloat32(5, Endian.little); 
         currentCoord[2] = byteData.getFloat32(9, Endian.little); 
-        _response = "Coordinate data received";
+        //_response = "Coordinate data received";
+        notifyListeners();
+      } else if (type==3) {
+        // 测量数据
+        final int nameLen = byteData.getUint8(1); 
+        final String name = String.fromCharCodes(data.sublist(2, 2 + nameLen)); 
+        final double x = byteData.getFloat64(2 + nameLen, Endian.little); 
+        final double y = byteData.getFloat64(2 + nameLen + 8, Endian.little);
+        final double z = byteData.getFloat64(2 + nameLen + 16, Endian.little); 
+
+        measurePointsNotifier.value = [...measurePointsNotifier.value, MeasurePoint(name: name, x: x, y: y, z: z)];
+        _response = "Measurement data received.";
+        log("Measurement data received: $name, x=$x, y=$y, z=$z");
         notifyListeners();
       } else {
-        _response = "${data.length} bytes received";
+        log("${data.length} bytes received");
         notifyListeners();
       }
     } catch (e) {
